@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PicHarvest 原型</title>
+  <style>
+    body { font-family: sans-serif; margin: 0; padding: 0; }
+    header, nav, section { padding: 16px; }
+    header { background: #2c3e50; color: white; display: flex; justify-content: space-between; align-items: center; }
+    nav { width: 200px; background: #ecf0f1; height: calc(100vh - 50px); float: left; }
+    nav ul { list-style: none; padding: 0; }
+    nav li { padding: 12px; cursor: pointer; }
+    main { margin-left: 200px; padding: 24px; }
+    section { margin-bottom: 32px; border: 1px solid #ccc; border-radius: 8px; background: #f9f9f9; }
+    h2 { margin-top: 0; background: #bdc3c7; padding: 8px; border-radius: 8px 8px 0 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>📦 PicHarvest</div>
+    <div>设置 | 状态 | 用户</div>
+  </header>
+
+  <nav>
+    <ul>
+      <li>📁 图片库</li>
+      <li>🎥 视频库</li>
+      <li>🌐 爬虫任务</li>
+      <li>🔍 重复检测</li>
+      <li>🛠 图像工具</li>
+      <li>🤖 AI 工具</li>
+      <li>⚙️ 设置</li>
+    </ul>
+  </nav>
+
+  <main>
+    <section>
+      <h2>🌐 图片/视频爬取器</h2>
+      来源选择 | 关键词输入 | 下载目录选择 | ▶️ 开始爬取<br><br>
+      <strong>任务队列</strong>: 显示当前爬取任务 + 状态 + 日志
+    </section>
+
+    <section>
+      <h2>🖼️ 图片库管理</h2>
+      标签筛选 | 搜索框 | 切换视图<br><br>
+      缩略图展示区（支持多选、拖拽、操作按钮）<br>
+      标签/收藏夹/目录侧边栏
+    </section>
+
+    <section>
+      <h2>🛠️ 图像处理工具</h2>
+      左：导入图片 | 右：格式选择、压缩、尺寸、水印、执行按钮
+    </section>
+
+    <section>
+      <h2>🔍 重复图片检测</h2>
+      相似度设置 | 开始检测按钮<br>
+      检测结果展示 + 相似图分组 + 删除建议
+    </section>
+
+    <section>
+      <h2>🤖 AI 工具箱</h2>
+      Tab 切换（去背景/分类/风格迁移/以图搜图）<br>
+      上传区 | 参数区 | 结果区
+    </section>
+
+    <section>
+      <h2>⚙️ 设置中心</h2>
+      通用设置 | 性能设置 | AI 设置（模型路径、测试等）
+    </section>
+  </main>
+</body>
+</html>

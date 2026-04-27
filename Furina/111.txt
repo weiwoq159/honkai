@@ -1,0 +1,131 @@
+use tauri::AppHandle;
+use crate::structs::index::{SelectTaskItem, TaskResultItem, ImageMeta, HashItem};
+use crate::services::database::{update_task_status, update_task_progress, insert_task_result_list, update_task_result};
+use crate::structs::index::TaskStatus;
+use image_hasher::{HashAlg, HashBytes, HasherConfig, ImageHash };
+use std::path::{PathBuf};
+use image::open;
+use crate::folder_reader::folder::{collect_images_recursively};
+use std::fs;
+use std::time::{SystemTime, UNIX_EPOCH};
+
+
+pub async fn deduplicate_img(app: &AppHandle, row: &SelectTaskItem) -> Result<(), String> {
+  let _ = update_task_status(app, row.id, TaskStatus::Processing).await?;
+  let target_dir = PathBuf::from(&row.folder_path); // 替换为你自己的路径
+  let hasher = HasherConfig::new()
+        .hash_alg(HashAlg::Gradient)
+        .hash_size(32, 32)
+        .to_hasher();
+  let mut image_paths = Vec::new();
+  collect_images_recursively(&target_dir, &mut image_paths);
+  println!("🔍 共找到 {} 张图片，开始计算哈希...", image_paths.len());
+  let mut result: Vec<HashItem> = match row.result_summary.as_ref() {
+    Some(s) if !s.trim().is_empty() => {
+        match serde_json::from_str::<Vec<HashItem>>(s) {
+            Ok(r) => r,
+            Err(e) => {
+                eprintln!("⚠️ JSON 反序列化失败: {}", e);
+                vec![]
+            }
+        }
+    }
+    _ => vec![]
+  };
+  let mut current_index = 1;
+  for image in &image_paths{
+    println!("🔍 正在计算{}/{} {:?} 哈希....", current_index, image_paths.len(), image );
+    let path_str = image.to_string_lossy().to_string();
+
+    if result.iter().any(|item| item.file_path == path_str) {
+      println!("✅ 已处理过，跳过：{}", path_str);
+      current_index += 1;
+      continue;
+    }
+
+    let img = match open(image) {
+      Ok(image) => image,
+      Err(e) => {
+          eprintln!("打开图像失败: {}", e); // 打印错误信息但不终止程序
+          continue; // 跳过当前迭代，继续处理下一个文件
+      }
+    };    // 生成 hash
+    let hash = hasher.hash_image(&img);
+    current_index += 1;
+    result.push(HashItem { file_path: image.to_string_lossy().to_string(), hash_bytes: hash.as_bytes().to_vec() });
+    let update_result = serde_json::to_string(&result).unwrap_or_else(|_| "[]".to_string());
+    let _ = update_task_result(app, row.id, update_result).await?;
+  }
+
+  let mut visited = vec![false; result.len()];
+  let mut groups: Vec<Vec<String>> = Vec::new();
+
+  for i in 0..result.len() {
+    let _ = update_task_progress(app, row.id, (i + 1).try_into().unwrap()).await?;
+    if visited[i] {
+        continue;
+    }
+
+    let mut group = vec![result[i].file_path.clone()];
+    visited[i] = true;
+
+    let hash_i: ImageHash<Vec<u8>> = ImageHash::from_bytes(&result[i].hash_bytes).unwrap();
+
+    for j in (i + 1)..result.len() {
+        if visited[j] {
+            continue;
+        }
+
+        let hash_j: ImageHash<Vec<u8>> = ImageHash::from_bytes(&result[i].hash_bytes).unwrap();
+        let dist = hash_i.dist(&hash_j);
+
+        if dist <= 10 {
+            group.push(result[j].file_path.clone());
+            visited[j] = true;
+        }
+    }
+
+    groups.push(group);
+  }
+  for (i, group) in groups.iter().enumerate() {
+    println!("🧯 分组 #{}:", i + 1);
+    for path in group {
+        println!("  - {}", path);
+    }
+  }
+  
+let filtered_groups: Vec<Vec<ImageMeta>> = groups
+  .into_iter()
+  .filter(|group| group.len() > 1)
+  .map(|group| {
+      group
+          .into_iter()
+          .filter_map(|p| {
+              let metadata = fs::metadata(&p).ok()?;
+              let modified = metadata.modified().ok()?;
+              let duration = modified.duration_since(UNIX_EPOCH).ok()?;
+
+              Some(ImageMeta {
+                  file_path: p,
+                  file_size: metadata.len(),
+                  file_update_time: duration.as_secs(),
+                  is_select: true
+              })
+          })
+          .collect()
+  })
+  .collect();
+
+  let task_result = TaskResultItem {
+  task_id: row.id.to_string(),
+  result: serde_json::to_string(&filtered_groups)
+      .map_err(|e| format!("序列化失败: {}", e))?,
+  };
+
+  let _ = insert_task_result_list(&app, task_result).await?;
+  let _ = update_task_status(app, row.id, TaskStatus::Finished).await?;
+
+  println!("任务完成！");
+
+  Ok(())
+}

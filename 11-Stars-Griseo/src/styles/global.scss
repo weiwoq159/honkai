@@ -1,0 +1,15 @@
+body {
+  height: 100vh;
+  margin: 0;
+}
+#app{
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.el-header{
+  -webkit-app-region: drag; /* 允许窗口拖拽 */
+}
+.el-row{
+  height: 100%;
+}

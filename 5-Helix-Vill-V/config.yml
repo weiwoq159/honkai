@@ -1,0 +1,29 @@
+link:
+#  - https://www.douyin.com/user/MS4wLjABAAAAXn-GyjbmW_K5tkt58dhYKUgOGmxCYjkUHozRkIHBcO0
+  - https://www.douyin.com/user/MS4wLjABAAAAsPd6gdI_ZDATS8xW-qbduwBGNQKVlqClPQksZ3vg6BQ?from_tab_name=main
+path: D:\work\mq\Honkai
+
+start_time: "2020-12-29"
+
+end_time: "now"
+
+database: True # 如果不使用数据库, 增量更新将不可用
+
+thread: 5
+
+cookies:
+  # msToken: xxx
+  # ttwid: xxx
+  # odin_tt: xxx
+  # passport_csrf_token: xxx
+  # sid_guard: xxx
+  msToken: p1ktJG5g-94N5g9NJPdzQVyGV1ThATxk4ffj47wmIdyhZK_R6SPFoj0eog_CBeQKzObghh2-1UfJFdGpn-LIyin-F6GIo3wPupO_PPGUgeCT8kJYUKmFWoxzNf-M6PagBq4UrsPFkcf5MujaN5KLjPIXLEvHj9EYiJIwxqvstfwO
+  ttwid: 1%7CyUu22n46qCqmWaeUPpDQj3GPznLykdovozUGOs6qEPs%7C1739684551%7C75f1c4eb90dab2ce48d7bec37cf7d0dee17e2502cf60a4111ed0cf1bfb744464
+  odin_tt: 84f8621a533be94fc8db6d495a1c099735bd8ac64e92e78e9087775c488acc8755db73a227a3f3b532497ff6c7e4faa29c7f6f0086e2b0fdc688b23493d7e438
+  passport_csrf_token: a1fcea3b4620a50e208e5b585a89b311
+  sid_guard: aecf3b8118b1049c038dce259adc1a24%7C1747583848%7C5184000%7CThu%2C+17-Jul-2025+15%3A57%3A28+GMT
+weibo_cookies: SINAGLOBAL=4551762982530.345.1697963624090; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9W5dee3IizpKGyTwcdLCdkMw5JpX5KMhUgL.Foe4Soz7eoepeh-2dJLoIpiSwHiyIgprUgRLxKBLBonLBoqt; SCF=Aqu8i0tdUNxw0FABmUxleyQsHkRwO4oz-t6AdaSlv618l_BPHJrz2fHahnBaKNMry7K8GeXwuIr1zCwUevnCwI0.; XSRF-TOKEN=zcQ3lLoDfP_IWKC3Ruldi9D2; ALF=1750602234; SUB=_2A25FNPSqDeRhGeVH7VAR8i3NyzmIHXVmSAhirDV8PUJbkNB-LRbjkW1NTynLr4obKS4QqXGtIagx6MAmvq25BAx_; _s_tentry=weibo.com; Apache=5333172291703.147.1748010269533; ULV=1748010269652:19:1:1:5333172291703.147.1748010269533:1745555061058; WBPSESS=u3cyzfM6DCx6pdS5XFnW9V2YVwlDJACs-nqmvsiPyQEmwMSCiSUpFXpPqjpCMZeaFNTR64D58JC3mpRBxoDIKtDOORbw9tfkOWlf8zQkW3--ZkDyCD_i96-JW13fxg6EgfKpaD02KztHvNXwjjo4Bw==; PC_TOKEN=f4d27de434
+
+ua: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36'
+
+REDnote_cookies: a1=193e2c5047b8uyhlofnf8pvlb9z82imh78naexjyk10000129824; webId=2906910e93d73a54fdbd7edd5e7a32a7; xsecappid=yamcha; gid=yjqdJS2yi0W0yjqdJS284YCVWDY7vx1liIiYIvTUh1Dju0y8YJ36xd888yJjYJ48Di00y80y; abRequestId=2906910e93d73a54fdbd7edd5e7a32a7; loadts=1748347611039; websectiga=f47eda31ec99545da40c2f731f0630efd2b0959e1dd10d5fedac3dce0bd1e04d; acw_tc=0ad6fb0917483483944176574e692dcf49f2ded4146fd7d0b59aa474b162bd

@@ -1,0 +1,46 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#app
+.el-container {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #f6f9fd;
+  user-select: none;
+}
+
+
+.el-header {
+  background-color: #f1f5fb; // 淡蓝灰，比 body 稍深
+  box-shadow: 0 2px 6px rgba(126, 182, 248, 0.08);
+  display: flex;
+  align-items: center;
+  -webkit-app-region: drag;
+}
+
+.el-aside {
+  background-color: #eef3f9; // 类似 header，但偏冷一点
+  box-shadow: 2px 0 10px rgba(126, 182, 248, 0.06);
+  height: 100vh;
+}
+
+.el-main {
+  background-color: #ffffff;
+  margin: 16px;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(126, 182, 248, 0.05);
+  height: 100%;
+  overflow: hidden;
+}
+.el-menu {
+  /* background-color: var(--el-menu-bg-color); */
+  /* border-right: 1px solid var(--el-menu-border-color); */
+  background-color: rgba(0,0,0,0);
+  border-right: none;
+}

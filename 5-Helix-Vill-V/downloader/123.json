@@ -1,0 +1,152 @@
+{
+    "code": 0,
+    "success": true,
+    "msg": "成功",
+    "data": {
+        "location": "",
+        "default_collection_tab": "note",
+        "red_id": "154741491",
+        "nickname": "花兮_honoka",
+        "red_official_verify_content": "",
+        "fstatus": "follows",
+        "avatar_pendant": {
+            "current_user_pendant": false,
+            "current_user_pet": false
+        },
+        "user_widget_switch": false,
+        "liked": 1351547,
+        "red_official_verify_type": 0,
+        "identity_deeplink": "xhsdiscover://rn/app-settings/official/certification/details?type=2&user_id=56a4c0455e87e70b5889f0a1&is_mcn=false",
+        "remark_name": "",
+        "red_official_verify_base_info": "",
+        "follows": 143,
+        "level": {
+            "image_link": "",
+            "number": 0
+        },
+        "collected_movie_num": 0,
+        "recommend_info": "",
+        "ip_location": "上海",
+        "show_extra_info_button": false,
+        "collected_poi_num": 0,
+        "tab_public": {
+            "collection_board": true,
+            "seed": true,
+            "collection": false,
+            "collection_note": true
+        },
+        "share_link": "https://www.xiaohongshu.com/user/profile/56a4c0455e87e70b5889f0a1?xsec_token=YBqsFVNUXylM2_BSXxTa7wjVEY3CQi7tf-3X1Jyi3T0Qw=&xsec_source=app_share",
+        "userid": "56a4c0455e87e70b5889f0a1",
+        "community_rule_url": "https://www.xiaohongshu.com/user/community-rule",
+        "desc_at_users": [],
+        "result": {
+            "success": true,
+            "code": 0,
+            "message": "success"
+        },
+        "imageb": "https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo317jki5onjq0045bim904bs5112k502g?imageView2/2/w/540/format/webp",
+        "zhong_tong_bar_info": {
+            "conversions": []
+        },
+        "identity_label_migrated": false,
+        "hula_tabs": {
+            "all_show_tab_config": [
+                {
+                    "tab_id": "note",
+                    "tab_name": "笔记"
+                }
+            ],
+            "tab_id_selected": "note"
+        },
+        "blocked": false,
+        "seller_info": {
+            "tab_goods_api_version": 1,
+            "tab_code_names": [],
+            "is_tab_goods_first": true
+        },
+        "banner_info": {
+            "image": "http://sns-avatar-qc.xhscdn.com/user_banner/default/h300-b100.png?imageView2/2/w/540/format/jpg",
+            "bg_color": "d8dcf6",
+            "like_status": false
+        },
+        "collected": 235619,
+        "nboards": 0,
+        "collected_notes_num": 0,
+        "recommend_info_icon": "",
+        "share_info": {
+            "title": "花兮_honoka",
+            "content": "⭐活动行程：1.17广州鸣潮一日店长/1.18上海百联zx重返未来\n❤️漫展签售：2.8沈阳MAG动漫游戏嘉年华 \n不写赛博to签，不授权转载，合作私"
+        },
+        "desc": "⭐活动行程：1.17广州鸣潮一日店长/1.18上海百联zx重返未来\n❤️漫展签售：2.8沈阳MAG动漫游戏嘉年华 \n不写赛博to签，不授权转载，合作私",
+        "collected_brand_num": 0,
+        "red_official_verified": false,
+        "fans": 172950,
+        "collected_tags_num": 0,
+        "collected_product_num": 0,
+        "collected_book_num": 0,
+        "blocking": false,
+        "location_jump": false,
+        "tab_visible": {
+            "collect": false,
+            "like": false,
+            "seed": true,
+            "note": true
+        },
+        "red_club_info": {
+            "red_club": false,
+            "red_club_level": 0,
+            "red_club_url": "https://www.xiaohongshu.com/store/mc/landing",
+            "redclubscore": 0
+        },
+        "note_num_stat": {
+            "posted": 399,
+            "liked": 1351547,
+            "collected": 235619
+        },
+        "interactions": [
+            {
+                "type": "follows",
+                "name": "关注",
+                "count": 143,
+                "is_private": true,
+                "toast": "该用户已设置关注列表不可见"
+            },
+            {
+                "count": 172950,
+                "is_private": false,
+                "toast": "",
+                "type": "fans",
+                "name": "粉丝"
+            },
+            {
+                "type": "interaction",
+                "name": "获赞与收藏",
+                "count": 1587166,
+                "is_private": false,
+                "toast": ""
+            }
+        ],
+        "avatar_like_status": false,
+        "tags": [
+            {
+                "icon": "http://ci.xiaohongshu.com/icons/user/gender-female-v1.png",
+                "tag_type": "info"
+            },
+            {
+                "name": "圆九文化",
+                "tag_type": "mcn",
+                "icon_size": 12,
+                "icon": "https://picasso-static.xiaohongshu.com/fe-platform/98da655f6cf9ca252b59d9b2f4a6a78eb49a5d3c.png"
+            }
+        ],
+        "images": "https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo317jki5onjq0045bim904bs5112k502g?imageView2/2/w/360/format/webp",
+        "gender": 1,
+        "is_recommend_level_illegal": false,
+        "share_info_v2": {
+            "title": "@花兮_honoka的个人主页",
+            "content": "⭐活动行程：1.17..."
+        },
+        "ndiscovery": 399,
+        "user_role_type": 6
+    }
+}

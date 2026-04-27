@@ -1,0 +1,7 @@
+{
+  "get_weibo_list_url": "https://weibo.com/ajax/statuses/mymblog",
+  "get_weibo_user_url": "https://weibo.com/ajax/profile/info",
+  "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.5845.97 Safari/537.36 Core/1.116.531.400 QQBrowser/19.3.6527.400",
+  "referer": "https://weibo.com/",
+  "weixin_referer": "https://mp.weixin.qq.com/"
+}
