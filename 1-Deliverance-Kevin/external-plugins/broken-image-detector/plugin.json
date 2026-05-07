@@ -1,0 +1,9 @@
+{
+  "id": "broken-image-detector",
+  "name": "图片损坏检测",
+  "version": "0.1.0",
+  "runtime": "python",
+  "entry": "main.py",
+  "command": "run",
+  "description": "扫描指定目录下无法正常读取或解码的损坏图片文件"
+}

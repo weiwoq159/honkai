@@ -1,0 +1,9 @@
+{
+  "id": "image-info-scanner",
+  "name": "图片基础信息扫描",
+  "version": "0.1.0",
+  "runtime": "python",
+  "entry": "main.py",
+  "command": "run",
+  "description": "扫描指定目录下的图片基础信息，包括尺寸、格式、文件大小和修改时间"
+}

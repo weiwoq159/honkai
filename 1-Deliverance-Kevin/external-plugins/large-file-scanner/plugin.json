@@ -1,0 +1,9 @@
+{
+  "id": "large-file-scanner",
+  "name": "--name",
+  "version": "0.1.0",
+  "runtime": "python",
+  "entry": "main.py",
+  "command": "run",
+  "description": "大文件扫描"
+}

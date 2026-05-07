@@ -1,0 +1,47 @@
+{
+  "id": "folder-flatten",
+  "name": "文件夹拉平",
+  "version": "0.1.0",
+  "runtime": "python",
+  "entry": "main.py",
+  "command": "run",
+  "description": "将多层文件夹中的文件整理到同一层级",
+  "inputSchema": {
+    "type": "object",
+    "required": ["sourceDir"],
+    "properties": {
+      "sourceDir": {
+        "type": "string",
+        "title": "源文件夹",
+        "description": "需要拉平的文件夹路径",
+        "uiType": "directory"
+      }
+    }
+  },
+  "outputSchema": {
+    "type": "object",
+    "required": ["success", "message"],
+    "properties": {
+      "success": {
+        "type": "boolean"
+      },
+      "message": {
+        "type": "string"
+      },
+      "data": {
+        "type": "object",
+        "properties": {
+          "sourceDir": {
+            "type": "string"
+          },
+          "movedCount": {
+            "type": "number"
+          },
+          "skippedCount": {
+            "type": "number"
+          }
+        }
+      }
+    }
+  }
+}

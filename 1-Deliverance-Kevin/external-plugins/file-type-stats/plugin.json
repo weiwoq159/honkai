@@ -1,0 +1,9 @@
+{
+  "id": "file-type-stats",
+  "name": "文件类型统计",
+  "version": "0.1.0",
+  "runtime": "python",
+  "entry": "main.py",
+  "command": "run",
+  "description": "扫描指定目录下的文件类型分布，统计不同扩展名的文件数量和占用空间"
+}

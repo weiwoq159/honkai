@@ -1,0 +1,9 @@
+{
+  "id": "batch-file-renamer",
+  "name": "批量重命名",
+  "version": "0.1.0",
+  "runtime": "python",
+  "entry": "main.py",
+  "command": "run",
+  "description": "按指定规则批量重命名文件，支持预览和自动处理文件名冲突"
+}

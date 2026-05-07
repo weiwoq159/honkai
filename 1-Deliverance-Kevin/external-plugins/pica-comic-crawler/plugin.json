@@ -1,0 +1,9 @@
+{
+  "id": "pica-comic-crawler",
+  "name": "哔咔漫画爬取",
+  "version": "0.1.0",
+  "runtime": "python",
+  "entry": "main.py",
+  "command": "run",
+  "description": "根据章节分页接口下载漫画图片"
+}

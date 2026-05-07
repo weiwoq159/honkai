@@ -1,0 +1,9 @@
+{
+  "id": "yanyun-macros",
+  "name": "宏",
+  "version": "0.1.0",
+  "runtime": "python",
+  "entry": "main.py",
+  "command": "run",
+  "description": "燕云十六声宏"
+}

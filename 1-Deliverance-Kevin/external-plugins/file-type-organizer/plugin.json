@@ -1,0 +1,9 @@
+{
+  "id": "file-type-organizer",
+  "name": "按文件类型分类整理",
+  "version": "0.1.0",
+  "runtime": "python",
+  "entry": "main.py",
+  "command": "run",
+  "description": "按文件扩展名将指定目录下的文件分类移动到对应文件夹中"
+}

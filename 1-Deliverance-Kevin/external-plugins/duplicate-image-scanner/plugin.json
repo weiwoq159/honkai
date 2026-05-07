@@ -1,0 +1,9 @@
+{
+  "id": "duplicate-image-scanner",
+  "name": "图片重复扫描",
+  "version": "0.1.0",
+  "runtime": "python",
+  "entry": "main.py",
+  "command": "run",
+  "description": "扫描指定目录下的相似或重复图片，并按相似度分组展示"
+}

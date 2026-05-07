@@ -1,0 +1,9 @@
+{
+  "id": "duplicate-filename-scanner",
+  "name": "重复文件名扫描",
+  "version": "0.1.0",
+  "runtime": "python",
+  "entry": "main.py",
+  "command": "run",
+  "description": "扫描指定目录下的重复文件名，帮助定位不同目录中的同名文件"
+}

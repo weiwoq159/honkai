@@ -1,0 +1,9 @@
+{
+  "id": "folder-stats",
+  "name": "文件夹详情",
+  "version": "0.1.0",
+  "runtime": "python",
+  "entry": "main.py",
+  "command": "run",
+  "description": "统计指定文件夹的大小、文件数量、图片数量、视频数量、创建时间和修改时间"
+}
