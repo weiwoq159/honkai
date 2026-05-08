@@ -24,7 +24,7 @@ import {
   runTool,
 } from "../../services/toolRunner";
 
-const { Paragraph, Text } = Typography;
+const { Text } = Typography;
 
 interface PicaComicCrawlerData {
   action?: string;
