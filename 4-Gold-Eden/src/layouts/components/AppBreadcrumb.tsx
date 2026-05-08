@@ -1,5 +1,5 @@
 import { Breadcrumb, Typography } from "antd";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { frontendPlugins, getPluginCategoryName } from "../../plugins/registry";
 import type { PluginCategory } from "../../plugins/types";
 
@@ -35,7 +35,7 @@ function getBreadcrumbItems(pathname: string) {
   if (pathname === "/") {
     return [
       {
-        title: "首页",
+        title: <Link to="/">首页</Link>,
       },
       {
         title: "Dashboard",
@@ -46,7 +46,7 @@ function getBreadcrumbItems(pathname: string) {
   if (pathname === "/settings") {
     return [
       {
-        title: "首页",
+        title: <Link to="/">首页</Link>,
       },
       {
         title: "设置",
@@ -61,7 +61,7 @@ function getBreadcrumbItems(pathname: string) {
 
     return [
       {
-        title: "首页",
+        title: <Link to="/">首页</Link>,
       },
       {
         title: getPluginCategoryName(categoryKey),
@@ -70,12 +70,18 @@ function getBreadcrumbItems(pathname: string) {
   }
 
   if (plugin) {
+    const categoryPath = `/plugins/${plugin.category}`;
+
     return [
       {
-        title: "首页",
+        title: <Link to="/">首页</Link>,
       },
       {
-        title: getPluginCategoryName(plugin.category),
+        title: (
+          <Link to={categoryPath}>
+            {getPluginCategoryName(plugin.category)}
+          </Link>
+        ),
       },
       {
         title: plugin.name,
@@ -85,7 +91,7 @@ function getBreadcrumbItems(pathname: string) {
 
   return [
     {
-      title: "首页",
+      title: <Link to="/">首页</Link>,
     },
     {
       title: "未知页面",
