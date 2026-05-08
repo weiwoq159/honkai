@@ -7,7 +7,7 @@ export const collectorPlugins: FrontendPlugin[] = [
     name: "哔咔漫画采集工具",
     description: "根据漫画地址抓取章节和图片",
     category: "collector",
-    path: "/plugins/crawler/pica-comic-crawler",
+    path: "/plugins/collector/pica-comic-crawler",
     order: 100,
     component: PicaComicCrawlerPage,
   },

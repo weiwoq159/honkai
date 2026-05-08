@@ -1,9 +1,10 @@
 import { createBrowserRouter } from "react-router-dom";
-import { MainLayout } from "@layouts/MainLayout";
-import { DashboardPage } from "../pages/DashboardPage.tsx";
-import { SettingsPage } from "../pages/SettingsPage.tsx";
-import { NotFoundPage } from "../pages/NotFoundPage.tsx";
-import { frontendPlugins } from "../plugins/registry.ts";
+import { MainLayout } from "../layouts/MainLayout";
+import { DashboardPage } from "../pages/DashboardPage";
+import { SettingsPage } from "../pages/SettingsPage";
+import { NotFoundPage } from "../pages/NotFoundPage";
+import { PluginCategoryPage } from "../pages/PluginCategoryPage";
+import { frontendPlugins } from "../plugins/registry";
 
 export const router = createBrowserRouter([
   {
@@ -18,10 +19,18 @@ export const router = createBrowserRouter([
         path: "settings",
         element: <SettingsPage />,
       },
-      ...frontendPlugins.map((plugin) => ({
-        path: plugin.path.replace(/^\//, ""),
-        element: <plugin.component />,
-      })),
+      {
+        path: "plugins/:category",
+        element: <PluginCategoryPage />,
+      },
+      ...frontendPlugins.map((plugin) => {
+        const PluginComponent = plugin.component;
+
+        return {
+          path: plugin.path.replace(/^\//, ""),
+          element: <PluginComponent />,
+        };
+      }),
       {
         path: "*",
         element: <NotFoundPage />,

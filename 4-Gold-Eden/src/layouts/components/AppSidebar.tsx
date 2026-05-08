@@ -45,7 +45,7 @@ export function AppSidebar() {
         .slice()
         .sort((a, b) => a.order - b.order)
         .map((category) => ({
-          key: `category-${category.key}`,
+          key: `/plugins/${category.key}`,
           icon: getCategoryIcon(category.key),
           label: category.name,
           children: getPluginsByCategory(category.key).map((plugin) => ({
@@ -62,7 +62,7 @@ export function AppSidebar() {
   }, []);
 
   const defaultOpenKeys = useMemo(() => {
-    return pluginCategories.map((category) => `category-${category.key}`);
+    return pluginCategories.map((category) => `/plugins/${category.key}`);
   }, []);
 
   return (
@@ -95,13 +95,7 @@ export function AppSidebar() {
           borderRight: 0,
         }}
         onClick={({ key }) => {
-          const target = String(key);
-
-          if (target.startsWith("category-")) {
-            return;
-          }
-
-          navigate(target);
+          navigate(String(key));
         }}
       />
     </div>

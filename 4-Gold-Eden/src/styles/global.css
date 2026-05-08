@@ -109,3 +109,10 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+.content-container {
+  width: 100%;
+  height: calc(100vh - 164px);
+  overflow: auto;
+  background: var(--bg);
+}
