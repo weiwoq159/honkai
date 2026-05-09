@@ -4,6 +4,6 @@
   "version": "0.1.0",
   "runtime": "python",
   "entry": "main.py",
-  "category": "file-tools",
-  "description": "批量修改本地文件名"
+  "command": "python main.py",
+  "description": "批量修改本地文件名，支持查找替换、添加前缀、添加后缀和序号命名。"
 }

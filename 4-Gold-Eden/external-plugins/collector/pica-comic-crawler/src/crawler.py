@@ -46,10 +46,11 @@ logger = get_logger(PLUGIN_ID)
 
 
 class PicaCrawler:
-    def __init__(self, email: str, password: str, comic_url: str) -> None:
+    def __init__(self, email: str, password: str, comic_url: str, output_dir:str = "") -> None:
         self.email = email.strip()
         self.password = password.strip()
         self.comic_url = comic_url.strip()
+        self.output_dir = str(output_dir or "").strip()
 
         self.client = PicaClient(
             email=self.email,
@@ -64,6 +65,22 @@ class PicaCrawler:
         self.images: list[dict[str, Any]] = []
 
         self.logger = logger
+
+    def get_output_root_dir(self) -> Path:
+        """
+        获取保存根目录。
+
+        优先级：
+        1. 前端传入 output_dir
+        2. 插件目录下 downloads
+
+        不使用 Path("downloads")，避免依赖当前工作目录。
+        """
+
+        if self.output_dir:
+            return Path(self.output_dir).expanduser().resolve()
+
+        return (PLUGIN_DIR / "downloads").resolve()
 
     def extract_comic_id(self) -> str:
         text = str(self.comic_url or "").strip()
@@ -462,8 +479,12 @@ class PicaCrawler:
             self.logger.warning("未能从接口响应中提取漫画标题")
             self.comic_title = self.comic_id or "unknown-comic"
 
+        output_root_dir = self.get_output_root_dir()
+
+        self.logger.notice("图片保存根目录：%s", output_root_dir)
+
         comic_dir = create_named_dir(
-            Path("downloads"),
+            output_root_dir,
             self.comic_title,
         )
 
@@ -577,8 +598,14 @@ class PicaCrawler:
             "comicId": self.comic_id,
             "comicUrl": self.comic_url,
             "comicTitle": self.comic_title,
+            "comicDir": str(comic_dir),
+            "outputDir": str(output_root_dir),
             "totalChapters": len(self.chapters),
         }
+
+        self.logger.completed("哔咔漫画爬虫执行完成")
+
+        return result
 
         self.logger.completed("哔咔漫画爬虫执行完成")
 

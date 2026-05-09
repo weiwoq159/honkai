@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import {
   Alert,
@@ -13,10 +14,13 @@ import {
 } from "antd";
 import {
   CloudDownloadOutlined,
+  FolderOpenOutlined,
   LinkOutlined,
   LockOutlined,
   UserOutlined,
 } from "@ant-design/icons";
+import { open } from "@tauri-apps/plugin-dialog";
+
 import { PluginLogViewer } from "../components/PluginLogViewer";
 import {
   listenToolLog,
@@ -30,8 +34,11 @@ interface PicaComicCrawlerData {
   action?: string;
   comicId?: string;
   title?: string;
+  comicTitle?: string;
   comicDir?: string;
+  outputDir?: string;
   chapterCount?: number;
+  totalChapters?: number;
   imageCount?: number;
   logs?: string[];
 }
@@ -40,6 +47,7 @@ interface PicaComicCrawlerFormValues {
   email: string;
   password: string;
   comicUrl: string;
+  outputDir: string;
 }
 
 interface PicaComicCrawlerProgress {
@@ -82,7 +90,14 @@ function getProgressStatus(
 
 export function PicaComicCrawlerPage() {
   const [form] = Form.useForm<PicaComicCrawlerFormValues>();
-
+  useEffect(() => {
+    form.setFieldsValue({
+      email: "weiwoq158",
+      password: "Cq0932313123!",
+      comicUrl: "https://manhuabika.com/comic/69d2aa01ee6d4d70a1c18acb",
+      outputDir: "D:\\work",
+    });
+  }, [form]);
   const [loading, setLoading] = useState(false);
   const [logs, setLogs] = useState<string[]>([]);
   const [resultData, setResultData] = useState<PicaComicCrawlerData | null>(
@@ -120,6 +135,35 @@ export function PicaComicCrawlerPage() {
     };
   }, []);
 
+  async function handleSelectOutputDir() {
+    try {
+      const selected = await open({
+        directory: true,
+        multiple: false,
+        title: "选择图片保存文件夹",
+      });
+
+      if (!selected) {
+        return;
+      }
+
+      const outputDir = Array.isArray(selected) ? selected[0] : selected;
+
+      if (!outputDir) {
+        return;
+      }
+
+      form.setFieldsValue({
+        outputDir,
+      });
+
+      await form.validateFields(["outputDir"]);
+    } catch (error) {
+      console.error(error);
+      message.error("选择文件夹失败");
+    }
+  }
+
   async function handleRun(values: PicaComicCrawlerFormValues) {
     try {
       setLoading(true);
@@ -139,17 +183,27 @@ export function PicaComicCrawlerPage() {
             email: values.email.trim(),
             password: values.password,
             comicUrl: values.comicUrl.trim(),
+            outputDir: values.outputDir.trim(),
           },
         },
       });
+      console.log("pica crawler result:", result);
 
-      const resultLogs = result.logs || result.data?.logs || [];
+      const rawData = result.data as any;
+
+      const normalizedData: PicaComicCrawlerData | null =
+        rawData?.data && typeof rawData.data === "object"
+          ? rawData.data
+          : rawData || null;
+
+      const resultLogs =
+        result.logs || normalizedData?.logs || rawData?.logs || [];
 
       if (resultLogs.length > 0) {
         setLogs(resultLogs);
       }
 
-      setResultData(result.data || null);
+      setResultData(normalizedData);
 
       if (result.success) {
         setProgress((prevProgress) => ({
@@ -174,7 +228,11 @@ export function PicaComicCrawlerPage() {
       console.error(error);
 
       const errorMessage =
-        error instanceof Error ? error.message : "采集任务执行异常";
+        error instanceof Error
+          ? error.message
+          : typeof error === "string"
+            ? error
+            : "采集任务执行异常";
 
       setProgress((prevProgress) => ({
         stage: "error",
@@ -198,7 +256,7 @@ export function PicaComicCrawlerPage() {
         type="info"
         showIcon
         message="工具说明"
-        description="根据账号信息和漫画详情页地址，调用本地 Python 插件采集漫画章节与图片信息。账号密码只会传递给本地插件处理，请不要在日志中打印明文密码。"
+        description="根据账号信息、漫画详情页地址和保存地址，调用本地 Python 插件采集漫画章节并下载图片。账号密码只会传递给本地插件处理，请不要在日志中打印明文密码。"
       />
 
       <Card title="采集配置">
@@ -210,6 +268,7 @@ export function PicaComicCrawlerPage() {
             email: "",
             password: "",
             comicUrl: "",
+            outputDir: "",
           }}
         >
           <Form.Item
@@ -285,6 +344,33 @@ export function PicaComicCrawlerPage() {
             />
           </Form.Item>
 
+          <Form.Item label="保存地址" required>
+            <Space.Compact style={{ width: "100%" }}>
+              <Form.Item
+                name="outputDir"
+                noStyle
+                rules={[
+                  {
+                    required: true,
+                    message: "请选择图片保存地址",
+                  },
+                ]}
+              >
+                <Input
+                  prefix={<FolderOpenOutlined />}
+                  placeholder="请选择图片保存文件夹"
+                  allowClear
+                  readOnly
+                  disabled={loading}
+                />
+              </Form.Item>
+
+              <Button disabled={loading} onClick={handleSelectOutputDir}>
+                选择文件夹
+              </Button>
+            </Space.Compact>
+          </Form.Item>
+
           <Form.Item style={{ marginBottom: 0 }}>
             <Space>
               <Button
@@ -341,18 +427,24 @@ export function PicaComicCrawlerPage() {
             </Descriptions.Item>
 
             <Descriptions.Item label="漫画标题">
-              {resultData.title || "-"}
+              {resultData.comicTitle || resultData.title || "-"}
             </Descriptions.Item>
 
             <Descriptions.Item label="章节数量">
-              {resultData.chapterCount ?? "-"}
+              {resultData.totalChapters ?? resultData.chapterCount ?? "-"}
             </Descriptions.Item>
 
             <Descriptions.Item label="图片数量">
               {resultData.imageCount ?? "-"}
             </Descriptions.Item>
 
-            <Descriptions.Item label="保存目录">
+            <Descriptions.Item label="保存根目录">
+              <Text copyable={!!resultData.outputDir}>
+                {resultData.outputDir || "-"}
+              </Text>
+            </Descriptions.Item>
+
+            <Descriptions.Item label="漫画保存目录">
               <Text copyable={!!resultData.comicDir}>
                 {resultData.comicDir || "-"}
               </Text>

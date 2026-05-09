@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 import sys
 from pathlib import Path
 from typing import Any
@@ -23,9 +22,8 @@ for item in [PLUGIN_DIR, SDK_DIR]:
 
 
 from gold_eden_plugin.logger import get_logger
-from gold_eden_plugin.result import success, fail
+from gold_eden_plugin.result import success, fail, print_result
 from gold_eden_plugin.runner import run_plugin, run_with_input
-from gold_eden_plugin.result import print_result
 
 from src.crawler import PicaCrawler
 
@@ -34,23 +32,54 @@ PLUGIN_ID = "pica-comic-crawler"
 logger = get_logger(PLUGIN_ID)
 
 
+def _get_config(input_data: dict[str, Any]) -> dict[str, Any]:
+    """
+    兼容两种入参：
+
+    1. 前端通用插件协议：
+       {
+         "action": "run",
+         "config": {
+           "email": "...",
+           "password": "...",
+           "comicUrl": "...",
+           "outputDir": "..."
+         }
+       }
+
+    2. 直接传参：
+       {
+         "email": "...",
+         "password": "...",
+         "comicUrl": "...",
+         "outputDir": "..."
+       }
+    """
+
+    config = input_data.get("config")
+
+    if isinstance(config, dict):
+        return config
+
+    return input_data
+
+
 def handle(input_data: dict[str, Any]):
-    """
-    前端传入示例：
+    config = _get_config(input_data)
 
-    {
-        "email": "xxx",
-        "password": "xxx",
-        "comicUrl": "https://manhuabika.com/comic/xxx"
-    }
-    """
-
-    email = str(input_data.get("email") or "").strip()
-    password = str(input_data.get("password") or "").strip()
+    email = str(config.get("email") or "").strip()
+    password = str(config.get("password") or "").strip()
     comic_url = str(
-        input_data.get("comicUrl")
-        or input_data.get("comic_url")
-        or input_data.get("url")
+        config.get("comicUrl")
+        or config.get("comic_url")
+        or config.get("url")
+        or ""
+    ).strip()
+    output_dir = str(
+        config.get("outputDir")
+        or config.get("output_dir")
+        or config.get("saveDir")
+        or config.get("save_dir")
         or ""
     ).strip()
 
@@ -70,6 +99,7 @@ def handle(input_data: dict[str, Any]):
             email=email,
             password=password,
             comic_url=comic_url,
+            output_dir=output_dir,
         )
 
         result = crawler.run()
@@ -102,9 +132,13 @@ if __name__ == "__main__":
     #     PLUGIN_ID,
     #     handle,
     #     {
-    #         "email": "你的账号",
-    #         "password": "你的密码",
-    #         "comicUrl": "https://manhuabika.com/comic/6479efb8f109b12134ff0a69",
+    #         "action": "run",
+    #         "config": {
+    #             "email": "你的账号",
+    #             "password": "你的密码",
+    #             "comicUrl": "https://manhuabika.com/comic/6479efb8f109b12134ff0a69",
+    #             "outputDir": "D:/downloads/pica",
+    #         },
     #     },
     # )
     # print_result(result)

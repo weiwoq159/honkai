@@ -180,6 +180,10 @@ def download_images_to_dir(
     max_retries: int = 3,
     retry_delay: int = 1,
     skip_existing: bool = True,
+    progress_start: int = 0,
+    progress_end: int = 100,
+    chapter_order: int | None = None,
+    chapter_title: str | None = None,
 ) -> dict[str, Any]:
     """
     将图片列表下载到指定章节目录。
@@ -189,6 +193,9 @@ def download_images_to_dir(
     2.jpg
     3.jpg
     ...
+
+    progress_start / progress_end:
+    由 crawler.py 分配该章节在总进度中的区间，避免每章下载都从 0% 到 100%。
     """
 
     chapter_path = Path(chapter_dir)
@@ -235,11 +242,16 @@ def download_images_to_dir(
         filename = f"{index}{extension}"
         save_path = chapter_path / filename
 
+        progress_span = max(progress_end - progress_start, 1)
+        percent = progress_start + int(index / max(total, 1) * progress_span)
+
         logger.progress(
             stage="downloading",
-            percent=int(index / total * 100),
+            percent=min(progress_end, percent),
             current=index,
             total=total,
+            chapter_order=chapter_order,
+            chapter_title=chapter_title,
             message=f"正在下载图片 {index}/{total}",
         )
 
