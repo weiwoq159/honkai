@@ -1,0 +1,9 @@
+{
+  "id": "alice-book-house-article-downloader",
+  "name": "爱丽丝书屋文章下载",
+  "version": "0.1.0",
+  "runtime": "python",
+  "entry": "main.py",
+  "category": "collector",
+  "description": "根据小说详情页和用户 Cookie 下载爱丽丝书屋文章"
+}

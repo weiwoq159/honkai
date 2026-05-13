@@ -1,0 +1,9 @@
+{
+  "id": "yanyun-lock-macro",
+  "name": "刷锁宏",
+  "version": "0.1.0",
+  "runtime": "python",
+  "entry": "main.py",
+  "category": "automation",
+  "description": "燕云十六声刷锁自动化宏"
+}

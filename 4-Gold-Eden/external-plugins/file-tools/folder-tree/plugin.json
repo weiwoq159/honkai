@@ -1,0 +1,9 @@
+{
+  "id": "folder-tree",
+  "name": "目录结构查看",
+  "version": "0.1.0",
+  "runtime": "python",
+  "entry": "main.py",
+  "category": "file-tools",
+  "description": "获取指定文件夹的目录结构"
+}

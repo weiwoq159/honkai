@@ -1,6 +1,10 @@
 import type { ComponentType } from "react";
 
-export type PluginCategory = "collector" | "automation" | "file-tools";
+export type PluginCategory =
+  | "collector"
+  | "automation"
+  | "file-tools"
+  | "ai-tools";
 
 export interface FrontendPlugin {
   /**

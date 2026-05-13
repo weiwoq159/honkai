@@ -1,5 +1,4 @@
 # src/crawler.py
-
 from __future__ import annotations
 
 import json
@@ -46,11 +45,23 @@ logger = get_logger(PLUGIN_ID)
 
 
 class PicaCrawler:
-    def __init__(self, email: str, password: str, comic_url: str, output_dir:str = "") -> None:
-        self.email = email.strip()
-        self.password = password.strip()
-        self.comic_url = comic_url.strip()
+    def __init__(
+        self,
+        email: str,
+        password: str,
+        comic_url: str,
+        output_dir: str = "",
+        comic_title: str = "",
+    ) -> None:
+        self.email = str(email or "").strip()
+        self.password = str(password or "").strip()
+        self.comic_url = str(comic_url or "").strip()
         self.output_dir = str(output_dir or "").strip()
+
+        # 前端传入的漫画名称。
+        # 有值：直接作为漫画文件夹名，不走接口标题翻译。
+        # 没值：从接口 title 获取并翻译。
+        self.input_comic_title = str(comic_title or "").strip()
 
         self.client = PicaClient(
             email=self.email,
@@ -58,11 +69,13 @@ class PicaCrawler:
         )
 
         self.comic_id: str | None = None
+
+        # 最终使用的漫画标题。
         self.comic_title: str | None = None
+
         self.comic_detail: dict[str, Any] = {}
         self.chapters: list[dict[str, Any]] = []
         self.total_chapters: int = 0
-        self.images: list[dict[str, Any]] = []
 
         self.logger = logger
 
@@ -76,11 +89,15 @@ class PicaCrawler:
 
         不使用 Path("downloads")，避免依赖当前工作目录。
         """
-
         if self.output_dir:
-            return Path(self.output_dir).expanduser().resolve()
+            output_root_dir = Path(self.output_dir).expanduser()
+        else:
+            output_root_dir = PLUGIN_DIR / "downloads"
 
-        return (PLUGIN_DIR / "downloads").resolve()
+        output_root_dir = output_root_dir.resolve()
+        output_root_dir.mkdir(parents=True, exist_ok=True)
+
+        return output_root_dir
 
     def extract_comic_id(self) -> str:
         text = str(self.comic_url or "").strip()
@@ -138,7 +155,6 @@ class PicaCrawler:
         self.logger.processing("准备获取漫画详情：%s", self.comic_id)
 
         result = self.client.get(f"comics/{self.comic_id}")
-
         self.comic_detail = result
 
         self.logger.progress(
@@ -161,7 +177,6 @@ class PicaCrawler:
         进度区间：
         20% - 35%
         """
-
         if not self.comic_id:
             raise ValueError("comic_id 不能为空，请先执行 prepare")
 
@@ -181,8 +196,7 @@ class PicaCrawler:
                 max_retry + 1,
             )
 
-            self.chapters = []
-
+            chapters: list[dict[str, Any]] = []
             total = 0
             total_page = 1
             current_page = 1
@@ -192,9 +206,7 @@ class PicaCrawler:
 
                 response = self.client.get(
                     f"comics/{self.comic_id}/eps",
-                    params={
-                        "page": current_page,
-                    },
+                    params={"page": current_page},
                 )
 
                 eps = response.get("data", {}).get("eps", {})
@@ -210,14 +222,14 @@ class PicaCrawler:
                 total_page = int(eps.get("pages") or 1)
                 total = int(eps.get("total") or 0)
 
-                self.chapters.extend(chapter_list)
+                chapters.extend(chapter_list)
 
                 self.logger.processing(
                     "章节分页获取完成：page=%s/%s，本页 %s 条，累计 %s/%s 条",
                     current_page,
                     total_page,
                     len(chapter_list),
-                    len(self.chapters),
+                    len(chapters),
                     total,
                 )
 
@@ -233,7 +245,9 @@ class PicaCrawler:
 
             self.total_chapters = total
 
-            if len(self.chapters) == total:
+            if len(chapters) == total:
+                self.chapters = chapters
+
                 self.logger.success(
                     "章节列表获取完成：实际获取 %s 章，接口 total=%s",
                     len(self.chapters),
@@ -257,7 +271,7 @@ class PicaCrawler:
 
             self.logger.warning(
                 "章节数量校验失败：实际获取 %s 章，接口 total=%s，准备重试",
-                len(self.chapters),
+                len(chapters),
                 total,
             )
 
@@ -279,7 +293,6 @@ class PicaCrawler:
 
         进度区间由外部传入，避免每个章节都从 50% 重复跳。
         """
-
         if not self.comic_id:
             raise ValueError("comic_id 不能为空，请先执行 prepare")
 
@@ -368,9 +381,7 @@ class PicaCrawler:
 
             response = self.client.get(
                 f"comics/{self.comic_id}/order/{order}/pages",
-                params={
-                    "page": current_page,
-                },
+                params={"page": current_page},
             )
 
             pages = response.get("data", {}).get("pages", {})
@@ -399,7 +410,9 @@ class PicaCrawler:
             )
 
             progress_span = max(progress_end - progress_start, 1)
-            percent = progress_start + int(current_page / max(total_pages, 1) * progress_span)
+            percent = progress_start + int(
+                current_page / max(total_pages, 1) * progress_span
+            )
 
             self.logger.progress(
                 stage="fetching_images",
@@ -423,10 +436,38 @@ class PicaCrawler:
     def extract_comic_title(self, comic_detail: dict[str, Any]) -> str:
         try:
             title = comic_detail["data"]["comic"]["title"]
-            title = translate_to_simplified_chinese(title)
-            return str(title)
         except Exception:
             return ""
+
+        title = str(title or "").strip()
+
+        if not title:
+            return ""
+
+        return translate_to_simplified_chinese(title)
+
+    def resolve_comic_title(self, comic_detail: dict[str, Any]) -> str:
+        """
+        解析最终漫画标题。
+
+        优先级：
+        1. 前端传入 comic_title：直接使用，不走翻译
+        2. 接口 title：走原来的翻译流程
+        3. comic_id
+        4. unknown-comic
+        """
+        if self.input_comic_title:
+            self.logger.notice("使用前端传入的漫画名称：%s", self.input_comic_title)
+            return self.input_comic_title
+
+        title = self.extract_comic_title(comic_detail)
+
+        if title:
+            self.logger.success("漫画标题：%s", title)
+            return title
+
+        self.logger.warning("未能从接口响应中提取漫画标题，使用漫画 ID 作为目录名")
+        return self.comic_id or "unknown-comic"
 
     def is_chapter_download_completed(self, chapter_dir: Path) -> bool:
         complete_file = chapter_dir / COMPLETE_MARK_FILE
@@ -466,21 +507,131 @@ class PicaCrawler:
         with complete_file.open("w", encoding="utf-8") as file:
             json.dump(data, file, ensure_ascii=False, indent=2)
 
+    def build_chapter_dir(self, comic_dir: Path, chapter: dict[str, Any], chapter_index: int) -> tuple[int, str, Path]:
+        chapter_order = int(chapter.get("order") or chapter_index)
+
+        chapter_title = str(
+            chapter.get("title")
+            or chapter.get("name")
+            or f"chapter-{chapter_order}"
+        ).strip()
+
+        target_dir = create_named_dir(
+            comic_dir,
+            chapter_title,
+        )
+
+        return chapter_order, chapter_title, target_dir
+
+    def download_chapter(
+        self,
+        *,
+        comic_dir: Path,
+        chapter: dict[str, Any],
+        chapter_index: int,
+        total_chapters: int,
+        download_start: int,
+        download_span: int,
+    ) -> None:
+        chapter_order, chapter_title, target_dir = self.build_chapter_dir(
+            comic_dir=comic_dir,
+            chapter=chapter,
+            chapter_index=chapter_index,
+        )
+
+        chapter_progress_start = download_start + int(
+            (chapter_index - 1) / max(total_chapters, 1) * download_span
+        )
+
+        chapter_progress_end = download_start + int(
+            chapter_index / max(total_chapters, 1) * download_span
+        )
+
+        chapter_progress_span = max(chapter_progress_end - chapter_progress_start, 1)
+
+        fetch_images_progress_start = chapter_progress_start
+        fetch_images_progress_end = chapter_progress_start + max(
+            1,
+            int(chapter_progress_span * 0.3),
+        )
+
+        download_progress_start = fetch_images_progress_end
+        download_progress_end = chapter_progress_end
+
+        if self.is_chapter_download_completed(target_dir):
+            self.logger.success(
+                "章节已下载完成，跳过请求图片接口：%s",
+                chapter_title,
+            )
+
+            self.logger.progress(
+                stage="downloading",
+                percent=chapter_progress_end,
+                current=chapter_index,
+                total=total_chapters,
+                chapter_order=chapter_order,
+                chapter_title=chapter_title,
+                message=f"章节已下载完成，跳过：{chapter_title}",
+            )
+
+            return
+
+        images = self.fetch_images(
+            chapter_order,
+            progress_start=fetch_images_progress_start,
+            progress_end=fetch_images_progress_end,
+            chapter_title=chapter_title,
+        )
+
+        download_result = download_images_to_dir(
+            images=images,
+            chapter_dir=target_dir,
+            session=self.client.session,
+            max_retries=3,
+            retry_delay=1,
+            skip_existing=True,
+            progress_start=download_progress_start,
+            progress_end=download_progress_end,
+            chapter_order=chapter_order,
+            chapter_title=chapter_title,
+        )
+
+        if int(download_result.get("failed") or 0) == 0:
+            self.mark_chapter_download_completed(
+                chapter_dir=target_dir,
+                chapter=chapter,
+                download_result=download_result,
+            )
+
+            self.logger.success(
+                "章节下载完成并写入标记：%s",
+                chapter_title,
+            )
+
+            self.logger.progress(
+                stage="downloading",
+                percent=chapter_progress_end,
+                current=chapter_index,
+                total=total_chapters,
+                chapter_order=chapter_order,
+                chapter_title=chapter_title,
+                message=f"章节下载完成：{chapter_title}",
+            )
+            return
+
+        self.logger.warning(
+            "章节下载未完全成功，不写入完成标记：%s，failed=%s",
+            chapter_title,
+            download_result.get("failed"),
+        )
+
     def run(self) -> dict[str, Any]:
         self.prepare()
 
         comic_detail = self.fetch_comic_detail()
-
-        self.comic_title = self.extract_comic_title(comic_detail)
-
-        if self.comic_title:
-            self.logger.success("漫画标题：%s", self.comic_title)
-        else:
-            self.logger.warning("未能从接口响应中提取漫画标题")
-            self.comic_title = self.comic_id or "unknown-comic"
+        self.comic_title = self.resolve_comic_title(comic_detail)
 
         output_root_dir = self.get_output_root_dir()
-
         self.logger.notice("图片保存根目录：%s", output_root_dir)
 
         comic_dir = create_named_dir(
@@ -496,103 +647,14 @@ class PicaCrawler:
         download_span = download_end - download_start
 
         for chapter_index, chapter in enumerate(self.chapters, start=1):
-            chapter_order = int(chapter.get("order") or chapter_index)
-
-            chapter_title = str(
-                chapter.get("title")
-                or chapter.get("name")
-                or f"chapter-{chapter_order}"
+            self.download_chapter(
+                comic_dir=comic_dir,
+                chapter=chapter,
+                chapter_index=chapter_index,
+                total_chapters=total_chapters,
+                download_start=download_start,
+                download_span=download_span,
             )
-
-            target_dir = create_named_dir(
-                comic_dir,
-                chapter_title,
-            )
-
-            chapter_progress_start = download_start + int(
-                (chapter_index - 1) / max(total_chapters, 1) * download_span
-            )
-
-            chapter_progress_end = download_start + int(
-                chapter_index / max(total_chapters, 1) * download_span
-            )
-
-            chapter_progress_span = max(chapter_progress_end - chapter_progress_start, 1)
-
-            fetch_images_progress_start = chapter_progress_start
-            fetch_images_progress_end = chapter_progress_start + max(
-                1,
-                int(chapter_progress_span * 0.3),
-            )
-
-            download_progress_start = fetch_images_progress_end
-            download_progress_end = chapter_progress_end
-
-            if self.is_chapter_download_completed(target_dir):
-                self.logger.success(
-                    "章节已下载完成，跳过请求图片接口：%s",
-                    chapter_title,
-                )
-
-                self.logger.progress(
-                    stage="downloading",
-                    percent=chapter_progress_end,
-                    current=chapter_index,
-                    total=total_chapters,
-                    chapter_order=chapter_order,
-                    chapter_title=chapter_title,
-                    message=f"章节已下载完成，跳过：{chapter_title}",
-                )
-
-                continue
-
-            images = self.fetch_images(
-                chapter_order,
-                progress_start=fetch_images_progress_start,
-                progress_end=fetch_images_progress_end,
-                chapter_title=chapter_title,
-            )
-
-            download_result = download_images_to_dir(
-                images=images,
-                chapter_dir=target_dir,
-                session=self.client.session,
-                max_retries=3,
-                retry_delay=1,
-                skip_existing=True,
-                progress_start=download_progress_start,
-                progress_end=download_progress_end,
-                chapter_order=chapter_order,
-                chapter_title=chapter_title,
-            )
-
-            if int(download_result.get("failed") or 0) == 0:
-                self.mark_chapter_download_completed(
-                    chapter_dir=target_dir,
-                    chapter=chapter,
-                    download_result=download_result,
-                )
-
-                self.logger.success(
-                    "章节下载完成并写入标记：%s",
-                    chapter_title,
-                )
-
-                self.logger.progress(
-                    stage="downloading",
-                    percent=chapter_progress_end,
-                    current=chapter_index,
-                    total=total_chapters,
-                    chapter_order=chapter_order,
-                    chapter_title=chapter_title,
-                    message=f"章节下载完成：{chapter_title}",
-                )
-            else:
-                self.logger.warning(
-                    "章节下载未完全成功，不写入完成标记：%s，failed=%s",
-                    chapter_title,
-                    download_result.get("failed"),
-                )
 
         result = {
             "comicId": self.comic_id,
@@ -607,16 +669,14 @@ class PicaCrawler:
 
         return result
 
-        self.logger.completed("哔咔漫画爬虫执行完成")
-
-        return result
-
 
 if __name__ == "__main__":
     crawler = PicaCrawler(
         email="你的账号",
         password="你的密码",
         comic_url="https://manhuabika.com/comic/6479efb8f109b12134ff0a69",
+        output_dir="D:\\work",
+        comic_title="调试漫画名称",
     )
 
     try:

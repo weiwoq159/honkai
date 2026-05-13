@@ -1,0 +1,9 @@
+{
+  "id": "ai-tavern",
+  "name": "AI酒馆",
+  "version": "0.1.0",
+  "runtime": "python",
+  "entry": "main.py",
+  "category": "ai-tools",
+  "description": "本地角色卡与 AI 对话工具"
+}

@@ -2,26 +2,32 @@ import type { FrontendPlugin, PluginCategoryConfig } from "./types";
 import { collectorPlugins } from "./collector/registry";
 import { automationPlugins } from "./automation/registry";
 import { fileToolPlugins } from "./file-tools/registry";
-
+import { aiToolsPlugins } from "./ai-tools/registry";
 export const pluginCategories: PluginCategoryConfig[] = [
+  {
+    key: "ai-tools",
+    name: "AI工具",
+    order: 100,
+  },
   {
     key: "collector",
     name: "采集工具",
-    order: 100,
+    order: 200,
   },
   {
     key: "automation",
     name: "自动化工具",
-    order: 200,
+    order: 300,
   },
   {
     key: "file-tools",
     name: "文件工具",
-    order: 300,
+    order: 400,
   },
 ];
 
 export const frontendPlugins: FrontendPlugin[] = [
+  ...aiToolsPlugins,
   ...collectorPlugins,
   ...automationPlugins,
   ...fileToolPlugins,

@@ -3,12 +3,13 @@ import path from "node:path";
 
 const ROOT_DIR = process.cwd();
 
-const VALID_CATEGORIES = ["collector", "automation", "file-tools"];
+const VALID_CATEGORIES = ["collector", "automation", "file-tools", "ai-tools"];
 
 const CATEGORY_EXPORT_NAME_MAP = {
   collector: "collectorPlugins",
   automation: "automationPlugins",
   "file-tools": "fileToolPlugins",
+  "ai-tools": "aiToolPlugins",
 };
 
 function parseArgs() {
@@ -160,12 +161,12 @@ function createOrUpdateCategoryRegistry({
     writeFileSafe(
       registryPath,
       `import type { FrontendPlugin } from "../types";
-${importLine}
+        ${importLine}
 
-export const ${exportName}: FrontendPlugin[] = [
-${pluginObject}
-];
-`,
+        export const ${exportName}: FrontendPlugin[] = [
+        ${pluginObject}
+        ];
+      `,
     );
 
     return;

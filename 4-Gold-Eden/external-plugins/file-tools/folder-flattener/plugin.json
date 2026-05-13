@@ -1,0 +1,9 @@
+{
+  "id": "folder-flattener",
+  "name": "拉平文件夹",
+  "version": "0.1.0",
+  "runtime": "python",
+  "entry": "main.py",
+  "category": "file-tools",
+  "description": "将多层文件夹中的文件提取到目标目录，支持重名处理"
+}

@@ -82,7 +82,7 @@ def handle(input_data: dict[str, Any]):
         or config.get("save_dir")
         or ""
     ).strip()
-
+    comic_title = str(config.get("comicTitle") or "").strip()
     if not email:
         return fail("请输入账号")
 
@@ -100,6 +100,7 @@ def handle(input_data: dict[str, Any]):
             password=password,
             comic_url=comic_url,
             output_dir=output_dir,
+            comic_title = comic_title
         )
 
         result = crawler.run()
